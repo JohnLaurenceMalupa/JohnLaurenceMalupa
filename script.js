@@ -1,40 +1,82 @@
-const countdown = document.querySelector(".countdown");
+const date = new Date();
 
-const interval = setInterval(() => {
-  const deadline = new Date(2023, 00, 00, 0, 00, 00);
+const renderCalendar = () => {
+  date.setDate(1);
 
-  const current = new Date();
+  const monthDays = document.querySelector(".days");
 
-  const diff = deadline - current;
+  const lastDay = new Date(
+    date.getFullYear(),
+    date.getMonth() + 1,
+    0
+  ).getDate();
 
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24)) + "";
-  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24) + "";
-  const minutes = Math.floor((diff / (1000 * 60)) % 60) + "";
-  const seconds = Math.floor((diff / 1000) % 60) + "";
+  const prevLastDay = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    0
+  ).getDate();
 
-  countdown.innerHTML = `
-    <div data-content="Days">${days.length === 1 ? `0${days}` : days}</div>
-    <div data-content="Hours">${hours.length === 1 ? `0${hours}` : hours}</div>
-    <div data-content="Minutes">${
-      minutes.length === 1 ? `0${minutes}` : minutes
-    }</div>
-    <div data-content="Seconds">${
-      seconds.length === 1 ? `0${seconds}` : seconds
-    }</div>
-`;
+  const firstDayIndex = date.getDay();
 
-  if (diff < 0) {
-    clearInterval(interval);
-    countdown.innerHTML = "<h1>Here We Go!!!</h1>";
+  const lastDayIndex = new Date(
+    date.getFullYear(),
+    date.getMonth() + 1,
+    0
+  ).getDay();
+
+  const nextDays = 7 - lastDayIndex - 1;
+
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  document.querySelector(".date h1").innerHTML = months[date.getMonth()];
+
+  document.querySelector(".date p").innerHTML = new Date().toDateString();
+
+  let days = "";
+
+  for (let x = firstDayIndex; x > 0; x--) {
+    days += `<div class="prev-date">${prevLastDay - x + 1}</div>`;
   }
 
-  document.querySelector(".reset").addEventListener("click", () => {
-    clearInterval(interval);
+  for (let i = 1; i <= lastDay; i++) {
+    if (
+      i === new Date().getDate() &&
+      date.getMonth() === new Date().getMonth()
+    ) {
+      days += `<div class="today">${i}</div>`;
+    } else {
+      days += `<div>${i}</div>`;
+    }
+  }
 
-    const divs = document.querySelectorAll(".countdown div");
+  for (let j = 1; j <= nextDays; j++) {
+    days += `<div class="next-date">${j}</div>`;
+    monthDays.innerHTML = days;
+  }
+};
 
-    divs.forEach((div) => {
-      div.innerHTML = "00";
-    });
-  });
-}, 1000);
+document.querySelector(".prev").addEventListener("click", () => {
+  date.setMonth(date.getMonth() - 1);
+  renderCalendar();
+});
+
+document.querySelector(".next").addEventListener("click", () => {
+  date.setMonth(date.getMonth() + 1);
+  renderCalendar();
+});
+
+renderCalendar();
